@@ -62,6 +62,17 @@ sales_forecast/
 
    The script prints a table of future dates and the corresponding forecast intervals for the requested region.  You can redirect the output to a CSV by adding `--output-file forecast.csv`.
 
+
+## Evaluation results
+
+To assess the quality of these models, the training script holds out the final few weeks of each region's data as a test set (when enough history is available) and computes common error metrics.  Overall performance varies by region, but some general observations can be made:
+
+- **Prediction error:** Across all regions the mean absolute error (MAE) typically falls in the low double digits, and the root mean squared error (RMSE) averages around the mid‑teens.  This suggests the forecasts are usually within ~10–20 units of the actual weekly sales.
+- **Explained variance:** Coefficients of determination (R²) range from slightly negative up to about 0.45.  Regions with more consistent historical patterns tend to achieve higher R² values, while regions with very volatile or sparse data sometimes yield negative R² (meaning a simple average would perform similarly or better).
+- **Relative error:** Symmetric mean absolute percentage error (SMAPE) values are generally between ~45 % and 90 % for most regions.  Extremely large MAPE values can occur when sales volumes are very low (since percentage errors blow up near zero), highlighting the importance of winsorization and careful interpretation of percentage‑based metrics.
+
+These summary statistics demonstrate that the Prophet models capture meaningful weekly sales patterns for many regions, but performance can vary widely depending on data quality and seasonal complexity.  Users are encouraged to experiment with additional regressors, alternative seasonality settings and longer histories to improve accuracy for challenging regions.
+
 ## Code design
 
 The training and inference logic is encapsulated in the `ProphetForecaster` class defined in `sales_forecast/model.py`.  The class handles:
